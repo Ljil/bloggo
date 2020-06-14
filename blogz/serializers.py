@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from rest_framework import request
 from . import models
 
 
@@ -40,14 +41,15 @@ class PostListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = UserSerializer
 
+    # {"slug": "ljil_postasdasd2", "title": "ljil_pos2", "description": "ljil_post", "created": "2020-06-14T11:30", "tags":
+    # [{"id": 1, "title": "IT"}, {"id": 2, "title": "WEB"}], "author": 1}
+
     def create(self, validated_data):
-        post = models.Post(
-            slug=validated_data.get('slug'),
-            title=validated_data.get('title'),
-            description=validated_data.get('description'),
-            author=validated_data.get('author'),
+        post = models.Post.objects.create(
+            **validated_data
         )
         post.save()
+        post.tags.set(validated_data.get('tags'))
         return post
 
     class Meta:
