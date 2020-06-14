@@ -14,7 +14,7 @@ class Post(models.Model):
     description = models.CharField("Краткое описание", max_length=300)
     text = models.TextField("Текст статьи")
     author = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
-    created = models.DateTimeField("Время создания", )
+    created = models.DateTimeField("Время создания", auto_now=True)
     tags = models.ManyToManyField(Tag, related_name="posts")
     slug = models.SlugField()
 
@@ -23,3 +23,5 @@ class Post(models.Model):
 
     class Meta:
         ordering = ['-created']
+        verbose_name = "Статья"
+        verbose_name_plural = "Статьи"
