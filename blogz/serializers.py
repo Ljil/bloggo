@@ -41,20 +41,54 @@ class PostListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = UserSerializer
 
-    # {"slug": "ljil_postasdasd2", "title": "ljil_pos2", "description": "ljil_post", "created": "2020-06-14T11:30", "tags":
-    # [{"id": 1, "title": "IT"}, {"id": 2, "title": "WEB"}], "author": 1}
+    # {
+    #     "slug": "a3332",
+    #     "title": "ljil_pos2",
+    #     "description": "ljil_post",
+    #     "text": "123",
+    #     "tags": [
+    #         {
+    #             "id": 1,
+    #             "title": "IT"
+    #         },
+    #         {
+    #             "id": 2,
+    #             "title": "WEB"
+    #         },
+    #         {
+    #             "id": 3,
+    #             "title": "PC"
+    #         },
+    #         {
+    #             "id": 4,
+    #             "title": "MAC"
+    #         },
+    #         {
+    #             "id": 5,
+    #             "title": "PYTHON"
+    #         }
+    #     ],
+    #     "author": 1
+    # }
 
     def create(self, validated_data):
         post = models.Post.objects.create(
-            **validated_data
+            slug=validated_data.get('slug'),
+            title=validated_data.get('title'),
+            description=validated_data.get('description'),
+            text=validated_data.get('text'),
+            author=validated_data.get('author')
         )
         post.save()
-        post.tags.set(validated_data.get('tags'))
+
+        for tag in validated_data.get('tags'):
+            tag_to_add = models.Tag.objects.get(title=tag['title'])
+            post.tags.add(tag_to_add)
         return post
 
     class Meta:
         model = models.Post
-        fields = ('id', 'slug', 'title', 'description', 'created', 'tags', 'author')
+        fields = ('id', 'slug', 'title', 'description', 'text', 'created', 'tags', 'author')
 
 
 class PostDetailSerializer(serializers.ModelSerializer):
